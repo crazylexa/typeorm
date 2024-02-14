@@ -66,6 +66,18 @@ import {
 import { ObjectUtils } from "../util/ObjectUtils"
 import { ColumnMetadata } from "../metadata/ColumnMetadata"
 
+type EntitySearchCriteria =
+    | string
+    | string[]
+    | number
+    | number[]
+    | Date
+    | Date[]
+    | ObjectId
+    | ObjectId[]
+    | ObjectLiteral
+    | ObjectLiteral[]
+
 /**
  * Entity manager supposed to work with any entity, automatically find its repository and call its methods,
  * whatever entity type are you passing.
@@ -314,18 +326,9 @@ export class MongoEntityManager extends EntityManager {
      * Executes fast and efficient UPDATE query.
      * Does not check if entity exist in the database.
      */
-    async update<Entity>(
+    async update<Entity, S = EntitySearchCriteria>(
         target: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | ObjectLiteral,
+        criteria: S,
         partialEntity: QueryDeepPartialEntity<Entity>,
     ): Promise<UpdateResult> {
         const result = new UpdateResult()
@@ -366,18 +369,9 @@ export class MongoEntityManager extends EntityManager {
      * Executes fast and efficient DELETE query.
      * Does not check if entity exist in the database.
      */
-    async delete<Entity>(
+    async delete<Entity, S = EntitySearchCriteria>(
         target: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | ObjectLiteral[],
+        criteria: S,
     ): Promise<DeleteResult> {
         const result = new DeleteResult()
 

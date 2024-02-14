@@ -39,6 +39,17 @@ import { InstanceChecker } from "../util/InstanceChecker"
 import { ObjectLiteral } from "../common/ObjectLiteral"
 import { PickKeysByType } from "../common/PickKeysByType"
 
+type EntitySearchCriteria<Entity extends ObjectLiteral> =
+    | string
+    | string[]
+    | number
+    | number[]
+    | Date
+    | Date[]
+    | ObjectId
+    | ObjectId[]
+    | FindOptionsWhere<Entity>
+
 /**
  * Entity manager supposed to work with any entity, automatically find its repository and call its methods,
  * whatever entity type are you passing.
@@ -744,18 +755,9 @@ export class EntityManager {
      * Does not check if entity exist in the database.
      * Condition(s) cannot be empty.
      */
-    update<Entity extends ObjectLiteral>(
+    update<Entity extends ObjectLiteral, S = EntitySearchCriteria<Entity>>(
         target: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | any,
+        criteria: S,
         partialEntity: QueryDeepPartialEntity<Entity>,
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
@@ -799,18 +801,9 @@ export class EntityManager {
      * Does not check if entity exist in the database.
      * Condition(s) cannot be empty.
      */
-    delete<Entity extends ObjectLiteral>(
+    delete<Entity extends ObjectLiteral, S = EntitySearchCriteria<Entity>>(
         targetOrEntity: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | any,
+        criteria: S,
     ): Promise<DeleteResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (
@@ -853,18 +846,9 @@ export class EntityManager {
      * Does not check if entity exist in the database.
      * Condition(s) cannot be empty.
      */
-    softDelete<Entity extends ObjectLiteral>(
+    softDelete<Entity extends ObjectLiteral, S = EntitySearchCriteria<Entity>>(
         targetOrEntity: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | any,
+        criteria: S,
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (
@@ -907,18 +891,9 @@ export class EntityManager {
      * Does not check if entity exist in the database.
      * Condition(s) cannot be empty.
      */
-    restore<Entity extends ObjectLiteral>(
+    restore<Entity extends ObjectLiteral, S = EntitySearchCriteria<Entity>>(
         targetOrEntity: EntityTarget<Entity>,
-        criteria:
-            | string
-            | string[]
-            | number
-            | number[]
-            | Date
-            | Date[]
-            | ObjectId
-            | ObjectId[]
-            | any,
+        criteria: S,
     ): Promise<UpdateResult> {
         // if user passed empty criteria or empty list of criterias, then throw an error
         if (
@@ -1319,9 +1294,9 @@ export class EntityManager {
     /**
      * Increments some column by provided value of the entities matched given conditions.
      */
-    async increment<Entity extends ObjectLiteral>(
+    async increment<Entity extends ObjectLiteral, C = FindOptionsWhere<Entity>>(
         entityClass: EntityTarget<Entity>,
-        conditions: any,
+        conditions: C,
         propertyPath: string,
         value: number | string,
     ): Promise<UpdateResult> {
@@ -1349,16 +1324,16 @@ export class EntityManager {
         return this.createQueryBuilder<Entity>(entityClass as any, "entity")
             .update(entityClass)
             .set(values)
-            .where(conditions)
+            .where(conditions as any)
             .execute()
     }
 
     /**
      * Decrements some column by provided value of the entities matched given conditions.
      */
-    async decrement<Entity extends ObjectLiteral>(
+    async decrement<Entity extends ObjectLiteral, C = FindOptionsWhere<Entity>>(
         entityClass: EntityTarget<Entity>,
-        conditions: any,
+        conditions: C,
         propertyPath: string,
         value: number | string,
     ): Promise<UpdateResult> {
@@ -1386,7 +1361,7 @@ export class EntityManager {
         return this.createQueryBuilder<Entity>(entityClass as any, "entity")
             .update(entityClass)
             .set(values)
-            .where(conditions)
+            .where(conditions as any)
             .execute()
     }
 
